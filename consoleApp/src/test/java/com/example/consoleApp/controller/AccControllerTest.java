@@ -54,9 +54,6 @@ class AccControllerTest {
     @MockitoBean
     UserDetailsService userDetailsService;
 
-    @MockitoBean
-    AuthenticationManager authenticationManager;
-
     @BeforeEach
     void setup() {
     }
