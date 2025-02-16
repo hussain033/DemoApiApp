@@ -16,16 +16,13 @@ public class Cart {
 
     private Integer quantity;
 
-    private Boolean billed;
-
     public Cart() {
     }
 
-    public Cart(Long userId, Long itemId, Integer quantity, Boolean billed) {
+    public Cart(Long userId, Long itemId, Integer quantity) {
         this.userId = userId;
         this.itemId = itemId;
         this.quantity = quantity;
-        this.billed = billed;
     }
 
     public Long getUserId() {
@@ -52,11 +49,4 @@ public class Cart {
         this.quantity = quantity;
     }
 
-    public Boolean isBilled() {
-        return billed;
-    }
-
-    public void setBilled(Boolean billed) {
-        this.billed = billed;
-    }
 }

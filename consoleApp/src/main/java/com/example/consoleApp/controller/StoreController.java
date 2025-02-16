@@ -23,7 +23,7 @@ public class StoreController {
     }
 
     @GetMapping("/item/{id}")
-    public Item getItemById(@PathVariable Long id) {
+    public Item getItemById(@PathVariable("id") Long id) {
 
         return storeService.getItemById(id);
     }
@@ -48,22 +48,22 @@ public class StoreController {
     }
 
     @GetMapping("/cart/{userId}/{itemId}")
-    public Cart getItembyId(@PathVariable Long userId, @PathVariable Long itemId) {
+    public Cart getItembyId(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId) {
         return cartService.getItemFromCart(new CartId(userId, itemId));
     }
 
     @GetMapping("/cart/{userId}")
-    public List<Cart> listCartItems(@PathVariable Long userId) {
+    public List<Cart> listCartItems(@PathVariable("userId") Long userId) {
         return cartService.listCart(userId);
     }
 
-    @PostMapping("/cart/")
+    @PostMapping("/cart")
     public void addToCart(@RequestBody Cart cart) {
         cartService.addToCart(cart);
     }
 
     @DeleteMapping("/cart/{userId}/{itemId}")
-    public void removeFromCart(@PathVariable Long userId, @PathVariable Long itemId) {
+    public void removeFromCart(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId) {
         cartService.removeFromCart(new CartId(userId, itemId));
     }
 
