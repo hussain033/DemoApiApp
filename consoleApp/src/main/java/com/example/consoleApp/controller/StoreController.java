@@ -1,8 +1,10 @@
 package com.example.consoleApp.controller;
 
+import com.example.consoleApp.model.Cart;
+import com.example.consoleApp.model.CartId;
 import com.example.consoleApp.model.Item;
+import com.example.consoleApp.service.CartService;
 import com.example.consoleApp.service.StoreService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,12 +15,12 @@ import java.util.List;
 public class StoreController {
 
     StoreService storeService;
+    CartService cartService;
 
-    public StoreController(StoreService storeService) {
-
+    public StoreController(StoreService storeService, CartService cartService) {
         this.storeService = storeService;
+        this.cartService = cartService;
     }
-
 
     @GetMapping("/item/{id}")
     public Item getItemById(@PathVariable Long id) {
@@ -44,4 +46,25 @@ public class StoreController {
 
         storeService.deleteItem(id);
     }
+
+    @GetMapping("/cart/{userId}/{itemId}")
+    public Cart getItembyId(@PathVariable Long userId, @PathVariable Long itemId) {
+        return cartService.getItemFromCart(new CartId(userId, itemId));
+    }
+
+    @GetMapping("/cart/{userId}")
+    public List<Cart> listCartItems(@PathVariable Long userId) {
+        return cartService.listCart(userId);
+    }
+
+    @PostMapping("/cart/")
+    public void addToCart(@RequestBody Cart cart) {
+        cartService.addToCart(cart);
+    }
+
+    @DeleteMapping("/cart/{userId}/{itemId}")
+    public void removeFromCart(@PathVariable Long userId, @PathVariable Long itemId) {
+        cartService.removeFromCart(new CartId(userId, itemId));
+    }
+
 }
