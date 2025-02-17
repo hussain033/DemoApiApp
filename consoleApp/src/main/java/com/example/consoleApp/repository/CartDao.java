@@ -1,16 +1,14 @@
 package com.example.consoleApp.repository;
 
 import com.example.consoleApp.model.Cart;
-import com.example.consoleApp.model.CartId;
 
 import java.util.List;
-import java.util.Optional;
+
 
 public interface CartDao {
+    public void save(Cart cart);
+    public void remove(Long userId, Long itemId);
+    public Cart get(Long userId, Long itemId);
+    public List<Cart> listAll(Long userId);
 
-    void add(Cart cart);
-    void update(Cart cart);
-    void remove(CartId cartId);
-    List<Cart> list(Long userId);
-    Optional<Cart> get(CartId cartId);
 }

@@ -5,7 +5,6 @@ import com.example.consoleApp.model.AuthenticationRequest;
 import com.example.consoleApp.model.AuthenticationResponse;
 import com.example.consoleApp.model.UserAcc;
 import com.example.consoleApp.service.AccService;
-import com.example.consoleApp.service.LoggingService;
 import com.example.consoleApp.service.jwt.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

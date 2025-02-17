@@ -1,7 +1,6 @@
 package com.example.consoleApp.controller;
 
 import com.example.consoleApp.model.Cart;
-import com.example.consoleApp.model.CartId;
 import com.example.consoleApp.model.Item;
 import com.example.consoleApp.service.CartService;
 import com.example.consoleApp.service.StoreService;
@@ -15,15 +14,18 @@ import java.util.List;
 public class StoreController {
 
     StoreService storeService;
+
     CartService cartService;
 
     public StoreController(StoreService storeService, CartService cartService) {
+
         this.storeService = storeService;
         this.cartService = cartService;
     }
 
+
     @GetMapping("/item/{id}")
-    public Item getItemById(@PathVariable("id") Long id) {
+    public Item getItemById(@PathVariable Long id) {
 
         return storeService.getItemById(id);
     }
@@ -48,23 +50,11 @@ public class StoreController {
     }
 
     @GetMapping("/cart/{userId}/{itemId}")
-    public Cart getItembyId(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId) {
-        return cartService.getItemFromCart(new CartId(userId, itemId));
-    }
-
-    @GetMapping("/cart/{userId}")
-    public List<Cart> listCartItems(@PathVariable("userId") Long userId) {
-        return cartService.listCart(userId);
+    public ResponseEntity<Cart> getCartItem(@PathVariable Long userId, @PathVariable Long itemId) {
+        return ResponseEntity.ok(cartService.getCartItem(userId, itemId));
     }
 
     @PostMapping("/cart")
     public void addToCart(@RequestBody Cart cart) {
-        cartService.addToCart(cart);
     }
-
-    @DeleteMapping("/cart/{userId}/{itemId}")
-    public void removeFromCart(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId) {
-        cartService.removeFromCart(new CartId(userId, itemId));
-    }
-
 }

@@ -3,76 +3,67 @@ package com.example.consoleApp.repository;
 import com.example.consoleApp.model.Cart;
 import com.example.consoleApp.model.CartId;
 import com.example.consoleApp.service.SessionFactoryClass;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class CartDaoImpl implements CartDao {
 
-    Session session;
+    ItemRepository itemRepository;
 
     @Override
-    public void add(Cart cart) {
-        session = SessionFactoryClass.getSession();
+    public void save(Cart cart) {
+        try {
+            Session session = SessionFactoryClass.getSession();
+            Transaction transaction = session.beginTransaction();
 
-        Transaction transaction = session.beginTransaction();
+            session.persist(cart);
 
-        session.persist(cart);
-
-        transaction.commit();
-
-        session.close();
+            transaction.commit();
+            session.close();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void update(Cart cart) {
-        session = SessionFactoryClass.getSession();
+    public void remove(Long userId, Long itemId) {
 
-        Transaction transaction = session.beginTransaction();
+        try {
+            Session session3 = SessionFactoryClass.getSession();
+            Transaction transaction1 = session3.beginTransaction();
 
-        session.merge(cart);
+            Cart cart = get(userId, itemId);
 
-        transaction.commit();
+            session3.remove(cart);
 
-        session.close();
+            transaction1.commit();
+            session3.close();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void remove(CartId cartId) {
-        session = SessionFactoryClass.getSession();
+    public Cart get(Long userId, Long itemId) {
 
-        Transaction transaction = session.beginTransaction();
+        CartId cartId = new CartId(userId, itemId);
+
+        Session session = SessionFactoryClass.getSession();
 
         Cart cart = session.get(Cart.class, cartId);
 
-        session.remove(cart);
-
-        transaction.commit();
-
         session.close();
+
+        return cart;
     }
 
     @Override
-    public List<Cart> list(Long userId) {
-        session = SessionFactoryClass.getSession();
-
-
-        session.close();
+    public List<Cart> listAll(Long userId) {
         return List.of();
-    }
-
-    @Override
-    public Optional<Cart> get(CartId cartId) {
-        session = SessionFactoryClass.getSession();
-
-        Cart cart = session.get(Cart.class, cartId);
-
-        session.close();
-
-        return Optional.of(cart);
     }
 }
