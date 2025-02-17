@@ -6,9 +6,10 @@ import java.util.List;
 
 
 public interface CartDao {
-    public void save(Cart cart);
-    public void remove(Long userId, Long itemId);
-    public Cart get(Long userId, Long itemId);
-    public List<Cart> listAll(Long userId);
+    void save(Cart cart);
+    void update(Cart cart);
+    void remove(Long userId, Long itemId);
+    Cart get(Long userId, Long itemId);
+    List<Cart> listAll(Long userId);
 
 }

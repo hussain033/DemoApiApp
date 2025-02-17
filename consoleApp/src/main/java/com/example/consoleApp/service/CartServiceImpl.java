@@ -29,7 +29,7 @@ public class CartServiceImpl implements CartService{
             int existQuantity = cart1.getQuantity();
             int extraQuantity = cart.getQuantity();
             cart.setQuantity(existQuantity + extraQuantity);
-            cartDao.save(cart);
+            cartDao.update(cart);
         }
 
     }

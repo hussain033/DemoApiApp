@@ -56,5 +56,16 @@ public class StoreController {
 
     @PostMapping("/cart")
     public void addToCart(@RequestBody Cart cart) {
+        cartService.addToCart(cart);
+    }
+
+    @DeleteMapping("/cart/{userId}/{itemId}")
+    public ResponseEntity<Cart> removeItemFromCart(@PathVariable Long userId, @PathVariable Long itemId) {
+        return ResponseEntity.ok(cartService.getCartItem(userId, itemId));
+    }
+
+    @GetMapping("/cart/{userId}")
+    public ResponseEntity<List<Cart>> listAllItemInCart(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(cartService.listCart(userId));
     }
 }

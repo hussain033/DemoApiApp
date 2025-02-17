@@ -1,5 +1,6 @@
 package com.example.consoleApp.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -9,9 +10,11 @@ import jakarta.persistence.IdClass;
 public class Cart {
 
     @Id
+    @Column(name = "user_id")
     private Long userId;
 
     @Id
+    @Column(name = "item_id")
     private Long itemId;
 
     private Integer quantity;
