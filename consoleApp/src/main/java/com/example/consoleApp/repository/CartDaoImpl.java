@@ -13,20 +13,24 @@ import java.util.List;
 @Repository
 public class CartDaoImpl implements CartDao {
 
-    ItemRepository itemRepository;
-
     @Override
     public void save(Cart cart) {
+
+        Session session = null;
+        Transaction transaction = null;
         try {
-            Session session = SessionFactoryClass.getSession();
-            Transaction transaction = session.beginTransaction();
+            session = SessionFactoryClass.getSession();
+            transaction = session.beginTransaction();
 
             session.persist(cart);
 
             transaction.commit();
-            session.close();
+
         } catch (HibernateException e) {
             throw new RuntimeException(e);
+        } finally {
+            if(transaction != null) transaction.rollback();
+            if(session != null) session.close();
         }
     }
 
@@ -48,43 +52,70 @@ public class CartDaoImpl implements CartDao {
     @Override
     public void remove(Long userId, Long itemId) {
 
+        Session session = null;
+        Transaction transaction = null;
         try {
-            Session session3 = SessionFactoryClass.getSession();
-            Transaction transaction1 = session3.beginTransaction();
+            session = SessionFactoryClass.getSession();
+            transaction = session.beginTransaction();
 
             Cart cart = get(userId, itemId);
 
-            session3.remove(cart);
+            session.remove(cart);
 
-            transaction1.commit();
-            session3.close();
+            transaction.commit();
+
         } catch (HibernateException e) {
             throw new RuntimeException(e);
+        } finally {
+
+            if(transaction != null) transaction.rollback();
+            if(session != null) session.close();
         }
     }
 
     @Override
     public Cart get(Long userId, Long itemId) {
 
-        CartId cartId = new CartId(userId, itemId);
+        CartId cartId = null;
+        Session session = null;
+        Cart cart = null;
+        try {
+            cartId =  new CartId(userId, itemId);
 
-        Session session = SessionFactoryClass.getSession();
+            session = SessionFactoryClass.getSession();
 
-        Cart cart = session.get(Cart.class, cartId);
+            cart = session.get(Cart.class, cartId);
 
-        session.close();
+            return cart;
 
-        return cart;
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+
+        } finally {
+
+            session.close();
+        }
+
+
+
+
     }
 
     @Override
     public List<Cart> listAll(Long userId) {
 
-        Session session = SessionFactoryClass.getSession();
+        try (Session session = SessionFactoryClass.getSession()) {
 
-        String query = "select c from Cart c where c.userId = :id";
-        Query sqlQuery = session.createQuery(query, Cart.class);
-        sqlQuery.setParameter("id", userId);
-        return (List<Cart>) sqlQuery.getResultList();
+            String query = "select c from Cart c where c.userId = :id";
+            Query sqlQuery = session.createQuery(query, Cart.class);
+            sqlQuery.setParameter("id", userId);
+
+            return (List<Cart>) sqlQuery.getResultList();
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+
+        }
     }
 }

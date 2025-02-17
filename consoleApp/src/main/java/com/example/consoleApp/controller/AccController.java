@@ -72,7 +72,7 @@ public class AccController {
         if (Objects.isNull(userDto)) {
             throw new RuntimeException("Payload cannot be Null");
         }
-        if(accService.findUserByUsername(userDto.getUsername())){
+        if(accService.findUserByUsername(userDto.getUsername()) != null){
             throw new RuntimeException("Username is already taken");
         }
         return ResponseEntity.ok(accService.addUser(userDto));
@@ -83,7 +83,7 @@ public class AccController {
         if (Objects.isNull(adminAcc)) {
             throw new RuntimeException("Payload cannot be Null");
         }
-        if(accService.findAdminByUsername(adminAcc.getUsername())){
+        if(accService.findAdminByUsername(adminAcc.getUsername()) != null){
             throw new RuntimeException("Username is already taken");
         }
         return ResponseEntity.ok(accService.addAdmin(adminAcc));
