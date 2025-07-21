@@ -1,11 +1,15 @@
 package com.example.consoleApp.service.jwt;
 
+import com.example.consoleApp.model.UserAcc;
+import com.example.consoleApp.service.AccService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +22,6 @@ import java.util.function.Function;
 // This class includes method for jwt generation and validation
 @Component
 public class JwtUtil {
-
-    public JwtUtil() {
-    }
 
     @Value("${jwt.secret}")
     private String secret;
@@ -78,5 +79,7 @@ public class JwtUtil {
         final String username = extractUsernameFromToken(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
+
+
 
 }

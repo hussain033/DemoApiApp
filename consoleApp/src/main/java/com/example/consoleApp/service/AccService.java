@@ -2,6 +2,9 @@ package com.example.consoleApp.service;
 
 import com.example.consoleApp.model.AdminAcc;
 import com.example.consoleApp.model.UserAcc;
+import org.apache.catalina.User;
+
+import java.util.Optional;
 
 public interface AccService {
 
@@ -11,7 +14,9 @@ public interface AccService {
     AdminAcc getAdminById(Long id);
 
 
-    boolean findUserByUsername(String username);
+    UserAcc findUserByUsername(String username);
 
-    boolean findAdminByUsername(String username);
+    AdminAcc findAdminByUsername(String username);
+
+    Long getCurrentUserId();
 }

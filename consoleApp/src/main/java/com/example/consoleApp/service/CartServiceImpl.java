@@ -1,8 +1,8 @@
 package com.example.consoleApp.service;
 
 import com.example.consoleApp.model.Cart;
-import com.example.consoleApp.model.CartId;
 import com.example.consoleApp.repository.CartDao;
+import com.example.consoleApp.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,36 +11,41 @@ import java.util.List;
 @Service
 public class CartServiceImpl implements CartService{
 
-    private final CartDao cartDao;
+    ItemRepository itemRepository;
+    CartDao cartDao;
 
-    public CartServiceImpl(CartDao cartDao) {
+    public CartServiceImpl(ItemRepository itemRepository, CartDao cartDao) {
+        this.itemRepository = itemRepository;
         this.cartDao = cartDao;
     }
 
     @Override
     public void addToCart(Cart cart) {
-        CartId cartId = new CartId(cart.getUserId(), cart.getItemId());
-        Cart cart1 = getItemFromCart(cartId);
-        if(cart1 != null) {
-            int initQuantity = cart.getQuantity();
-            int extendQuantity = cart1.getQuantity();
-            cart.setQuantity(initQuantity + extendQuantity);
+
+        Cart cart1 = cartDao.get(cart.getUserId(), cart.getItemId());
+        if(cart1 == null) {
+            cartDao.save(cart);
+        } else {
+            int existQuantity = cart1.getQuantity();
+            int extraQuantity = cart.getQuantity();
+            cart.setQuantity(existQuantity + extraQuantity);
+            cartDao.update(cart);
         }
-        cartDao.add(cart);
+
     }
 
     @Override
-    public void removeFromCart(CartId cartId) {
-        cartDao.remove(cartId);
+    public void removeFromCart(Long userId, Long itemId) {
+        cartDao.remove(userId, itemId);
+    }
+
+    @Override
+    public Cart getCartItem(Long userId, Long itemId) {
+        return cartDao.get(userId, itemId);
     }
 
     @Override
     public List<Cart> listCart(Long userId) {
-        return List.of();
-    }
-
-    @Override
-    public Cart getItemFromCart(CartId cartId) {
-        return cartDao.get(cartId).orElse(null);
+        return cartDao.listAll(userId);
     }
 }

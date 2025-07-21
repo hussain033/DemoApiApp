@@ -1,29 +1,41 @@
 package com.example.consoleApp.controller;
 
 import com.example.consoleApp.model.Cart;
-import com.example.consoleApp.model.CartId;
 import com.example.consoleApp.model.Item;
+import com.example.consoleApp.model.UserAcc;
+import com.example.consoleApp.repository.UserAccRepository;
+import com.example.consoleApp.service.AccService;
+import com.example.consoleApp.service.AccServiceImpl;
 import com.example.consoleApp.service.CartService;
 import com.example.consoleApp.service.StoreService;
+import com.example.consoleApp.service.jwt.JwtUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/store")
 public class StoreController {
 
     StoreService storeService;
+
     CartService cartService;
 
-    public StoreController(StoreService storeService, CartService cartService) {
+    AccService accService;
+
+    public StoreController(StoreService storeService, CartService cartService, AccService accService) {
+
         this.storeService = storeService;
         this.cartService = cartService;
+        this.accService = accService;
     }
 
+
     @GetMapping("/item/{id}")
-    public Item getItemById(@PathVariable("id") Long id) {
+    public Item getItemById(@PathVariable Long id) {
 
         return storeService.getItemById(id);
     }
@@ -47,14 +59,10 @@ public class StoreController {
         storeService.deleteItem(id);
     }
 
-    @GetMapping("/cart/{userId}/{itemId}")
-    public Cart getItembyId(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId) {
-        return cartService.getItemFromCart(new CartId(userId, itemId));
-    }
-
-    @GetMapping("/cart/{userId}")
-    public List<Cart> listCartItems(@PathVariable("userId") Long userId) {
-        return cartService.listCart(userId);
+    @GetMapping("/cart/{itemId}")
+    public ResponseEntity<Cart> getCartItem(@PathVariable Long itemId) {
+        Long userId = accService.getCurrentUserId();
+        return ResponseEntity.ok(cartService.getCartItem(userId, itemId));
     }
 
     @PostMapping("/cart")
@@ -62,9 +70,15 @@ public class StoreController {
         cartService.addToCart(cart);
     }
 
-    @DeleteMapping("/cart/{userId}/{itemId}")
-    public void removeFromCart(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId) {
-        cartService.removeFromCart(new CartId(userId, itemId));
+    @DeleteMapping("/cart/{itemId}")
+    public void removeItemFromCart(@PathVariable Long itemId) {
+        Long userId = accService.getCurrentUserId();
+        cartService.removeFromCart(userId, itemId);
     }
 
+    @GetMapping("/cart/list")
+    public ResponseEntity<List<Cart>> listAllItemInCart() {
+        Long userId = accService.getCurrentUserId();
+        return ResponseEntity.ok(cartService.listCart(userId));
+    }
 }

@@ -42,6 +42,8 @@ public class SecurityConfiguration {
         httpSecurity.authorizeHttpRequests((requests) -> requests
                 .requestMatchers(HttpMethod.GET, "/store/item").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/store/item/{id}").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/cart/**").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/cart").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/store/item").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/store/item/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/acc/login").permitAll()

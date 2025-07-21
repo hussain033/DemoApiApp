@@ -5,6 +5,7 @@ import com.example.consoleApp.model.UserAcc;
 import com.example.consoleApp.repository.AdminAccRepository;
 import com.example.consoleApp.repository.UserAccRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -62,15 +63,21 @@ public class AccServiceImpl implements AccService {
     }
 
     @Override
-    public boolean findUserByUsername(String username) {
+    public UserAcc findUserByUsername(String username) {
         Optional<UserAcc> user = userAccRepository.findByUsername(username);
-        return user.isPresent();
+        return user.orElse(null);
     }
 
     @Override
-    public boolean findAdminByUsername(String username) {
+    public AdminAcc findAdminByUsername(String username) {
         Optional<AdminAcc> admin = adminAccRepository.findByUsername(username);
-        return admin.isPresent();
+        return admin.orElse(null);
+    }
+
+    public Long getCurrentUserId () {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAcc user = findUserByUsername(username);
+        return user.getId();
     }
 
 

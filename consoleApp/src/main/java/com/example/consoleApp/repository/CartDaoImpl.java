@@ -3,76 +3,119 @@ package com.example.consoleApp.repository;
 import com.example.consoleApp.model.Cart;
 import com.example.consoleApp.model.CartId;
 import com.example.consoleApp.service.SessionFactoryClass;
+import jakarta.persistence.Query;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class CartDaoImpl implements CartDao {
 
-    Session session;
-
     @Override
-    public void add(Cart cart) {
-        session = SessionFactoryClass.getSession();
+    public void save(Cart cart) {
 
-        Transaction transaction = session.beginTransaction();
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = SessionFactoryClass.getSession();
+            transaction = session.beginTransaction();
 
-        session.persist(cart);
+            session.persist(cart);
 
-        transaction.commit();
+            transaction.commit();
 
-        session.close();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(transaction != null) transaction.rollback();
+            if(session != null) session.close();
+        }
     }
 
     @Override
     public void update(Cart cart) {
-        session = SessionFactoryClass.getSession();
+        try {
+            Session session = SessionFactoryClass.getSession();
+            Transaction transaction = session.beginTransaction();
 
-        Transaction transaction = session.beginTransaction();
+            session.merge(cart);
 
-        session.merge(cart);
-
-        transaction.commit();
-
-        session.close();
+            transaction.commit();
+            session.close();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void remove(CartId cartId) {
-        session = SessionFactoryClass.getSession();
+    public void remove(Long userId, Long itemId) {
 
-        Transaction transaction = session.beginTransaction();
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = SessionFactoryClass.getSession();
+            transaction = session.beginTransaction();
 
-        Cart cart = session.get(Cart.class, cartId);
+            Cart cart = get(userId, itemId);
 
-        session.remove(cart);
+            session.remove(cart);
 
-        transaction.commit();
+            transaction.commit();
 
-        session.close();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        } finally {
+
+            if(transaction != null) transaction.rollback();
+            if(session != null) session.close();
+        }
     }
 
     @Override
-    public List<Cart> list(Long userId) {
-        session = SessionFactoryClass.getSession();
+    public Cart get(Long userId, Long itemId) {
+
+        CartId cartId = null;
+        Session session = null;
+        Cart cart = null;
+        try {
+            cartId =  new CartId(userId, itemId);
+
+            session = SessionFactoryClass.getSession();
+
+            cart = session.get(Cart.class, cartId);
+
+            return cart;
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+
+        } finally {
+
+            session.close();
+        }
 
 
-        session.close();
-        return List.of();
+
+
     }
 
     @Override
-    public Optional<Cart> get(CartId cartId) {
-        session = SessionFactoryClass.getSession();
+    public List<Cart> listAll(Long userId) {
 
-        Cart cart = session.get(Cart.class, cartId);
+        try (Session session = SessionFactoryClass.getSession()) {
 
-        session.close();
+            String query = "select c from Cart c where c.userId = :id";
+            Query sqlQuery = session.createQuery(query, Cart.class);
+            sqlQuery.setParameter("id", userId);
 
-        return Optional.of(cart);
+            return (List<Cart>) sqlQuery.getResultList();
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+
+        }
     }
 }
